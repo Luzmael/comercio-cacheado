@@ -1,32 +1,31 @@
-export const config = {
-  runtime: 'edge'
-}
 
-export default async function handler(request) {
-  const { searchParams } = new URL(request.url);
-  const store = searchParams.get('store') || 'default';
+export const config = { runtime: 'edge' }
+
+export default async (request) => {
+  const { searchParams } = new URL(request.url)
+  const store = searchParams.get('tienda')
 
   try {
-    const numbersUrl = new URL('/data/whatsapp-numbers.json', request.url);
-    const response = await fetch(numbersUrl);
-    const numbers = await response.json();
-
+    const data = await fetch(new URL('/data/whatsapp_numbers.json', request.url))
+    const numbers = await data.json()
+    
+    // Buscar número por URL única o default
+    const numberData = numbers.find(n => n.url_unica === store) || numbers[0]
+    
     return new Response(JSON.stringify({
-      number: numbers[store] || numbers.default,
-      status: 'active'
+      phone: numberData.phone_number,
+      owner: numberData.owner_name,
+      active: numberData.is_active
     }), {
-      status: 200,
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=3600'
       }
-    });
+    })
 
   } catch (error) {
     return new Response(JSON.stringify({ 
-      error: 'Error loading WhatsApp numbers' 
-    }), {
-      status: 500
-    });
+      error: "Error al cargar WhatsApp" 
+    }), { status: 500 })
   }
 }

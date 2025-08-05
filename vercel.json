@@ -11,7 +11,7 @@
     }
   ],
   "routes": [
-    // 1. Regla para archivos estáticos (máx caching)
+    
     {
       "src": "/images/(.*)",
       "headers": {
@@ -20,7 +20,7 @@
         "Vercel-CDN-Cache-Control": "public, max-age=31536000, immutable"
       }
     },
-    // 2. API routes (caching corto)
+   
     {
       "src": "/api/(.*)",
       "dest": "/api/$1",
@@ -29,7 +29,7 @@
         "CDN-Cache-Control": "public, max-age=60"
       }
     },
-    // 3. Datos JSON (caching moderado)
+   
     {
       "src": "/data/(.*)",
       "headers": {
@@ -37,7 +37,7 @@
         "CDN-Cache-Control": "public, max-age=3600"
       }
     },
-    // 4. Tiendas específicas (Edge caching)
+    
     {
       "src": "/tiendas/(?<store>[^/]+)/?$",
       "dest": "/tiendas/$store/index.html",
@@ -46,7 +46,7 @@
         "CDN-Cache-Control": "public, max-age=60"
       }
     },
-    // 5. Fallback para SPAs
+    
     {
       "src": "/(.*)",
       "dest": "/tiendas/default/index.html",

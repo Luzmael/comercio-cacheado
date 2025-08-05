@@ -2,8 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "src": "api/*.js",
+      "use": "@vercel/edge"
     },
     {
       "src": "tiendas/**/*.html",
@@ -12,22 +12,29 @@
   ],
   "routes": [
     {
-      "src": "/public/img/(.*)",
+      "src": "/public/(products|gallery)/(.*)",
       "headers": {
         "Cache-Control": "public, max-age=604800, immutable",
         "CDN-Cache-Control": "public, max-age=604800"
       }
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1",
+      "src": "/api/products",
+      "dest": "/api/products.js",
       "headers": {
-        "Cache-Control": "public, max-age=60"
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
       }
     },
     {
-      "src": "/tienda-(.+)/?$",
-      "dest": "/tiendas/$1/index.html",
+      "src": "/api/whatsapp",
+      "dest": "/api/whatsapp.js",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/tienda-(?<store>[^/]+)/?$",
+      "dest": "/tiendas/$store/index.html",
       "headers": {
         "Cache-Control": "public, max-age=3600"
       }
@@ -36,8 +43,5 @@
       "src": "/(.*)",
       "dest": "/tiendas/default/index.html"
     }
-  ],
-  "env": {
-    "ENABLE_EDGE": "1"
-  }
+  ]
 }

@@ -19,23 +19,30 @@
       }
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1",
+      "src": "/api/products",
+      "dest": "/api/products.js",
       "headers": {
         "Cache-Control": "public, max-age=0, s-maxage=60",
         "CDN-Cache-Control": "public, max-age=60, stale-while-revalidate=300"
       }
     },
     {
-      "src": "/data/(.*)",
+      "src": "/api/whatsapp",
+      "dest": "/api/whatsapp.js",
       "headers": {
-        "Cache-Control": "public, max-age=3600",
-        "CDN-Cache-Control": "public, max-age=3600, stale-while-revalidate=3600"
+        "Cache-Control": "public, max-age=60"
       }
     },
     {
-      "src": "/(tienda|store)-([^/]+)/?$",
-      "dest": "/tiendas/$2/index.html",
+      "src": "/data/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=3600",
+        "CDN-Cache-Control": "public, max-age=3600, stale-while-revalidate=7200"
+      }
+    },
+    {
+      "src": "/tienda-(?<store>[^/]+)/?$",
+      "dest": "/tiendas/$store/index.html",
       "headers": {
         "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
       }
@@ -50,7 +57,6 @@
   ],
   "env": {
     "ENABLE_EDGE": "1",
-    "CACHE_TTL": "3600",
-    "EDGE_FUNCTIONS": "true"
+    "CACHE_TTL": "3600"
   }
 }

@@ -1,25 +1,33 @@
-import { NextResponse } from 'next/server'
-
 export const config = {
-  runtime: 'edge',
-  regions: ['iad1'] // Virginia, USA (Edge location óptima)
+  runtime: 'edge'
 }
 
-export async function GET(request) {
+export default async function handler(request) {
   try {
-    // Cache control (prioriza el cache del vercel.json)
-    const response = NextResponse.json({
-      data: require('../data/products.json'),
-      lastUpdated: new Date().toISOString()
-    })
+    // Cargar datos desde el repositorio
+    const dataUrl = new URL('/data/products.json', request.url);
+    const response = await fetch(dataUrl);
+    const products = await response.json();
 
-    response.headers.set('CDN-Cache-Control', 'public, max-age=3600, stale-while-revalidate=1800')
-    return response
+    return new Response(JSON.stringify({
+      data: products,
+      lastUpdated: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=60',
+        'CDN-Cache-Control': 'public, max-age=3600'
+      }
+    });
 
   } catch (error) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Error loading products' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    return new Response(JSON.stringify({ 
+      error: 'Error loading products',
+      details: error.message 
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

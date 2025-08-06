@@ -4,12 +4,19 @@ export const config = {
 
 export default async function (request) {
   try {
-    const WHATSAPP_URL = new URL('/data/whatsapp_numbers.json', request.url);
-    const numbers = await (await fetch(WHATSAPP_URL)).json();
+    const url = new URL(request.url);
+    const store = url.searchParams.get('store');
     
-    const { searchParams } = new URL(request.url);
-    const store = searchParams.get('store');
-    const numberData = numbers.find(n => n.url_unica === store) || numbers[0];
+   
+    const response = await fetch(new URL('/data/whatsapp_numbers.json', request.url));
+    const numbers = await response.json();
+
+    
+    const numberData = numbers.find(n => n.url_unica === store) || numbers.find(n => n.is_default);
+
+    if (!numberData) {
+      throw new Error("Número no encontrado");
+    }
 
     return new Response(JSON.stringify({
       number: numberData.phone_number,
@@ -22,9 +29,11 @@ export default async function (request) {
     });
   } catch (error) {
     return new Response(JSON.stringify({ 
-      error: "Error al cargar WhatsApp" 
+      error: "Error al cargar WhatsApp",
+      details: error.message 
     }), {
-      status: 500
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

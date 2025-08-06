@@ -16,29 +16,26 @@
   ],
   "routes": [
     {
-      "src": "/public/(img|imagenes)/(.*\\.webp)",
+      "src": "/(img|imagenes)/(.*\\.webp)",
       "headers": {
         "Cache-Control": "public, max-age=604800, immutable"
       }
     },
     {
       "src": "/api/products",
-      "handler": "api/products.js",
-      "headers": {
-        "Cache-Control": "public, max-age=60"
-      }
+      "dest": "api/products.js"
     },
     {
       "src": "/api/whatsapp",
-      "handler": "api/whatsapp.js"
+      "dest": "api/whatsapp.js"
     },
     {
-      "src": "/tienda-(.+)/?$",
-      "destination": "/tiendas/$1/index.html"
+      "src": "/tienda-caracas",
+      "dest": "tiendas/caracas/index.html"
     },
     {
       "src": "/(.*)",
-      "destination": "/tiendas/default/index.html"
+      "dest": "tiendas/default/index.html"
     }
   ]
 }

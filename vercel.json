@@ -1,43 +1,31 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/*.js",
-      "use": "@vercel/edge"
-    },
-    {
-      "src": "tiendas/**/*.html",
-      "use": "@vercel/static"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "edge"
     }
-  ],
+  },
   "routes": [
     {
-      "src": "/public/(products|gallery)/(.*)",
+      "src": "/(img|imagenes)/(.*)",
       "headers": {
-        "Cache-Control": "public, max-age=604800, immutable",
-        "CDN-Cache-Control": "public, max-age=604800"
+        "Cache-Control": "public, max-age=604800, immutable"
       }
     },
     {
       "src": "/api/products",
       "dest": "/api/products.js",
       "headers": {
-        "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
+        "Cache-Control": "public, max-age=60"
       }
     },
     {
       "src": "/api/whatsapp",
-      "dest": "/api/whatsapp.js",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
+      "dest": "/api/whatsapp.js"
     },
     {
       "src": "/tienda-(?<store>[^/]+)/?$",
-      "dest": "/tiendas/$store/index.html",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
+      "dest": "/tiendas/$store/index.html"
     },
     {
       "src": "/(.*)",

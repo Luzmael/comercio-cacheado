@@ -1,12 +1,12 @@
 {
   "id": "config_001",
-  "rate": 115.33,
-  "shipping_cost": 15.50,
+  "rate": 36.50,
+  "shipping_cost": 15.00,
   "min_order_quantity": 8,
-  "last_updated": "2023-11-20T12:00:00Z",
+  "last_updated": "2023-11-30T00:00:00Z",
   "currency": "Bs",
   "features": {
-    "dynamic_pricing": true,
+    "edge_cache": true,
     "multi_store": true
   }
 }

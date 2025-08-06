@@ -1,27 +1,30 @@
-// Usaremos una estrategia alternativa para cargar datos
 export const config = {
   runtime: 'edge'
 };
 
 export default async function (request) {
   try {
-    const PRODUCTS_URL = new URL('/data/products.json', request.url);
-    const SETTINGS_URL = new URL('/data/app_settings.json', request.url);
-    
-    const [productsRes, settingsRes] = await Promise.all([
-      fetch(PRODUCTS_URL),
-      fetch(SETTINGS_URL)
+   
+    const [settingsRes, productsRes] = await Promise.all([
+      fetch(new URL('/data/app_settings.json', request.url)),
+      fetch(new URL('/data/products.json', request.url))
     ]);
 
-    const products = await productsRes.json();
     const settings = await settingsRes.json();
+    const products = await productsRes.json();
 
-    const processedProducts = products.map(p => ({
-      ...p,
-      local_price: (p.price * settings.rate).toFixed(2)
+    
+    const processedProducts = products.map(product => ({
+      ...product,
+      local_price: (product.price * settings.rate).toFixed(2),
+      original_local_price: (product.original_price * settings.rate).toFixed(2)
     }));
 
-    return new Response(JSON.stringify(processedProducts), {
+    return new Response(JSON.stringify({
+      products: processedProducts,
+      shipping_cost: settings.shipping_cost,
+      min_order: settings.min_order_quantity
+    }), {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'public, max-age=60'
@@ -29,10 +32,11 @@ export default async function (request) {
     });
   } catch (error) {
     return new Response(JSON.stringify({ 
-      error: "Server error",
+      error: "Error al cargar productos",
       details: error.message 
     }), {
-      status: 500
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "api/products.js": {
-      "runtime": "edge",
-      "includeFiles": "data/products.json"
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/edge"
     },
-    "api/whatsapp.js": {
-      "runtime": "edge",
-      "includeFiles": "data/whatsapp_numbers.json"
+    {
+      "src": "tiendas/**/*.html",
+      "use": "@vercel/static"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(img|imagenes)/(.*\\.webp)",
@@ -19,7 +19,10 @@
     },
     {
       "src": "/api/products",
-      "dest": "/api/products.js"
+      "dest": "/api/products.js",
+      "headers": {
+        "Cache-Control": "public, max-age=60"
+      }
     },
     {
       "src": "/api/whatsapp",

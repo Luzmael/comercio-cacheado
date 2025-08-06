@@ -1,31 +1,30 @@
 
-export const config = { runtime: 'edge' }
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
-export default async (request) => {
-  const { searchParams } = new URL(request.url)
-  const store = searchParams.get('tienda')
+const numbersData = JSON.parse(readFileSync(join(process.cwd(), 'data/whatsapp_numbers.json')));
 
+export const config = {
+  runtime: 'experimental-edge'
+};
+
+export default function (request) {
   try {
-    const data = await fetch(new URL('/data/whatsapp_numbers.json', request.url))
-    const numbers = await data.json()
-    
-    // Buscar número por URL única o default
-    const numberData = numbers.find(n => n.url_unica === store) || numbers[0]
-    
+    const url = new URL(request.url);
+    const store = url.searchParams.get('store');
+    const numberData = numbersData.find(n => n.url_unica === store) || numbersData[0];
+
     return new Response(JSON.stringify({
-      phone: numberData.phone_number,
-      owner: numberData.owner_name,
-      active: numberData.is_active
+      number: numberData.phone_number,
+      owner: numberData.owner_name
     }), {
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600'
+        'Content-Type': 'application/json'
       }
-    })
-
+    });
   } catch (error) {
-    return new Response(JSON.stringify({ 
-      error: "Error al cargar WhatsApp" 
-    }), { status: 500 })
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500
+    });
   }
 }

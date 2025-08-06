@@ -1,23 +1,25 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": {
-      "runtime": "edge"
+    "api/products.js": {
+      "runtime": "edge",
+      "includeFiles": "data/products.json"
+    },
+    "api/whatsapp.js": {
+      "runtime": "edge",
+      "includeFiles": "data/whatsapp_numbers.json"
     }
   },
   "routes": [
     {
-      "src": "/(img|imagenes)/(.*)",
+      "src": "/(img|imagenes)/(.*\\.webp)",
       "headers": {
         "Cache-Control": "public, max-age=604800, immutable"
       }
     },
     {
       "src": "/api/products",
-      "dest": "/api/products.js",
-      "headers": {
-        "Cache-Control": "public, max-age=60"
-      }
+      "dest": "/api/products.js"
     },
     {
       "src": "/api/whatsapp",

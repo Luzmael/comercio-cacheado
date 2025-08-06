@@ -2,7 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/*.js",
+      "src": "api/products.js",
+      "use": "@vercel/edge"
+    },
+    {
+      "src": "api/whatsapp.js",
       "use": "@vercel/edge"
     },
     {
@@ -19,10 +23,7 @@
     },
     {
       "src": "/api/products",
-      "dest": "/api/products.js",
-      "headers": {
-        "Cache-Control": "public, max-age=60"
-      }
+      "dest": "/api/products.js"
     },
     {
       "src": "/api/whatsapp",

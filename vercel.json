@@ -1,16 +1,11 @@
 {
   "version": 2,
-  "builds": [],
-  "functions": {
-    "api/products.js": {
-      "runtime": "edge",
-      "includeFiles": "data/products.json"
-    },
-    "api/whatsapp.js": {
-      "runtime": "edge",
-      "includeFiles": "data/whatsapp_numbers.json"
+  "builds": [
+    {
+      "src": "tiendas/**/*.html",
+      "use": "@vercel/static"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(img|imagenes)/(.*\\.webp)",
@@ -20,17 +15,24 @@
     },
     {
       "src": "/api/products",
-      "dest": "/api/products.js"
+      "dest": "api/products.js",
+      "methods": ["GET"]
     },
     {
       "src": "/api/whatsapp",
-      "dest": "/api/whatsapp.js"
+      "dest": "api/whatsapp.js",
+      "methods": ["GET"]
     },
     {
       "src": "/tienda-caracas",
-      "dest": "/tiendas/caracas/index.html"
+      "dest": "tiendas/caracas/index.html"
     },
     {
+      "src": "/(.*)",
+      "dest": "tiendas/default/index.html"
+    }
+  ]
+}
       "src": "/(.*)",
       "dest": "/tiendas/default/index.html"
     }

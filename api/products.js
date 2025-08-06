@@ -1,19 +1,24 @@
-import { join } from 'path';
-import { readFileSync } from 'fs';
-
-// Cargar datos en tiempo de compilación
-const productsData = JSON.parse(readFileSync(join(process.cwd(), 'data/products.json'));
-const settingsData = JSON.parse(readFileSync(join(process.cwd(), 'data/app_settings.json'));
-
+// Usaremos una estrategia alternativa para cargar datos
 export const config = {
-  runtime: 'experimental-edge'
+  runtime: 'edge'
 };
 
-export default function (request) {
+export default async function (request) {
   try {
-    const processedProducts = productsData.map(p => ({
+    const PRODUCTS_URL = new URL('/data/products.json', request.url);
+    const SETTINGS_URL = new URL('/data/app_settings.json', request.url);
+    
+    const [productsRes, settingsRes] = await Promise.all([
+      fetch(PRODUCTS_URL),
+      fetch(SETTINGS_URL)
+    ]);
+
+    const products = await productsRes.json();
+    const settings = await settingsRes.json();
+
+    const processedProducts = products.map(p => ({
       ...p,
-      local_price: (p.price * settingsData.rate).toFixed(2)
+      local_price: (p.price * settings.rate).toFixed(2)
     }));
 
     return new Response(JSON.stringify(processedProducts), {
@@ -23,7 +28,10 @@ export default function (request) {
       }
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Server error" }), {
+    return new Response(JSON.stringify({ 
+      error: "Server error",
+      details: error.message 
+    }), {
       status: 500
     });
   }
